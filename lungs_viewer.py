@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import cv2
+import lungs_finder as lf
 
 try:
     __import__("imp").find_module("dicompylercore")
@@ -13,22 +14,9 @@ except ImportError:
     print("\"dicompylercore\" library was not found. \"lungs-finder\" works without dicom support.")
 
 
-def find_left_lung(image):
-    left_lung = cv2.CascadeClassifier("left_lung.xml")
-    found = left_lung.detectMultiScale(image, 1.3, 5)
-
-    if len(found) > 0:
-        find_left_lung.detect += 1
-        x, y, width, height = found[0]
-        cv2.rectangle(image, (x, y), (x + width, y + height), (255, 0, 0), 2)
-    find_left_lung.overall += 1
-
-    return image
-
-
-def main(argv):
+def parse_argv(argv):
     if len(argv) < 4:
-        print("Usage: lungs-finder.py \"path_to_folder\" \"position_to_start\" \"histogram_equalization\".")
+        print("Usage: lungs_viewer.py \"path_to_folder\" \"position_to_start\" \"histogram_equalization\".")
         exit(1)
 
     path_to_folder = argv[1]
@@ -39,9 +27,28 @@ def main(argv):
     else:
         histogram_equalization = False
 
-    find_left_lung.detect = 0
-    find_left_lung.overall = 0
+    return path_to_folder, position_to_start, histogram_equalization
 
+
+def proportional_resize(image, max_side):
+    if image.shape[0] > max_side or image.shape[1] > max_side:
+        if image.shape[0] > image.shape[1]:
+            height = max_side
+            width = int(height / image.shape[0] * image.shape[1])
+        else:
+            width = max_side
+            height = int(width / image.shape[1] * image.shape[0])
+    else:
+        height = image.shape[0]
+        width = image.shape[1]
+
+    return cv2.resize(image, (width, height))
+
+
+def scan(argv):
+    path_to_folder, position_to_start, histogram_equalization = parse_argv(argv)
+    left_detects = 0
+    left_total = 0
     walks = list(os.walk(path_to_folder))
     i = 0
     k = 1
@@ -82,25 +89,25 @@ def main(argv):
                     j += 1
                     continue
 
-                if image.shape[0] > image.shape[1]:
-                    height = 512
-                    width = int(height / image.shape[0] * image.shape[1])
-                else:
-                    width = 512
-                    height = int(width / image.shape[1] * image.shape[0])
+                scaled_image = proportional_resize(image, 512)
+                left_lung_rectangle = lf.find_left_lung(scaled_image)
+                color_image = scaled_image
 
-                scaled_image = cv2.resize(image, (width, height))
-                cv2.imshow("lungs-finder", find_left_lung(scaled_image))
+                if left_lung_rectangle is not None:
+                    x, y, width, height = left_lung_rectangle
+                    color_image = cv2.cvtColor(scaled_image, cv2.COLOR_GRAY2BGR)
+                    cv2.rectangle(color_image, (x, y), (x + width, y + height), (128, 128, 0), 2)
+                    left_detects += 1
+
+                left_total += 1
+                cv2.imshow("lungs-finder", color_image)
                 code = cv2.waitKey(0)
 
                 while code not in [2, 3, 27, 32]:
                     code = cv2.waitKey(0)
 
                 if code == 27:
-                    print("File number: " + str(j + 1) + ".")
-                    print("Detects: " + str(find_left_lung.detect) + ".")
-                    print("Overall: " + str(find_left_lung.overall) + ".")
-                    print("Recognition rate: " + str(find_left_lung.detect / find_left_lung.overall * 100) + "%.")
+                    print("Left lung rate: " + str(left_detects / left_total * 100) + "%.")
                     exit(0)
                 elif code in [3, 32]:
                     j += 1
@@ -112,10 +119,8 @@ def main(argv):
                             i -= 2
         i += 1
 
-    print("Detects: " + str(find_left_lung.detect) + ".")
-    print("Overall: " + str(find_left_lung.overall) + ".")
-    print("Recognition rate: " + str(find_left_lung.detect / find_left_lung.overall * 100) + "%.")
+    print("Left lung rate: " + str(left_detects / left_total * 100) + "%.")
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(scan(sys.argv))

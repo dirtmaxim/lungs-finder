@@ -1,3 +1,4 @@
+import os
 import cv2
 
 
@@ -17,7 +18,7 @@ def __find_max_rectangle(rectangles):
 
 
 def find_left_lung(image):
-    left_lung = cv2.CascadeClassifier("lungs_finder/left_lung.xml")
+    left_lung = cv2.CascadeClassifier(os.path.dirname(__file__) + "/left_lung.xml")
     found = left_lung.detectMultiScale(image, 1.2, 5)
     left_lung_rectangle = __find_max_rectangle(found)
 

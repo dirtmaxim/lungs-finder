@@ -9,5 +9,5 @@ setup(
     url="https://github.com/dirtmaxim/lungs-finder",
     license="Apache-2.0",
     packages=find_packages(),
-    package_data={"lungs_finder": ["*.xml"]}
+    package_data={"lungs_finder": ["*.xml", "*.np"]}
 )

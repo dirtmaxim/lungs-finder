@@ -20,20 +20,20 @@ def find_max_rectangle(rectangles):
 
 
 def get_lungs(image, padding):
-    right_lung = haar_finder.find_right_lung_haar(image)
-    left_lung = haar_finder.find_left_lung_haar(image)
+    right_lung = hog_finder.find_right_lung_hog(image)
+    left_lung = hog_finder.find_left_lung_hog(image)
+
+    if right_lung is None:
+        right_lung = haar_finder.find_right_lung_haar(image)
+
+    if left_lung is None:
+        left_lung = haar_finder.find_left_lung_haar(image)
 
     if right_lung is None:
         right_lung = lbp_finder.find_right_lung_lbp(image)
 
     if left_lung is None:
         left_lung = lbp_finder.find_left_lung_lbp(image)
-
-    if right_lung is None:
-        right_lung = hog_finder.find_right_lung_hog(image)
-
-    if left_lung is None:
-        left_lung = hog_finder.find_left_lung_hog(image)
 
     if right_lung is None and left_lung is None:
         return None

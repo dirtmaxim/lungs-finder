@@ -27,8 +27,8 @@ def get_lungs(image, padding=15):
         x_left, y_left, width_left, height_left = left_lung
 
         if abs(x_right - x_left) < min(width_right, width_left):
-            right_lung = None
-            left_lung = None
+            right_lung = lbp_finder.find_right_lung_lbp(image)
+            left_lung = lbp_finder.find_left_lung_lbp(image)
 
     if right_lung is None:
         right_lung = haar_finder.find_right_lung_haar(image)

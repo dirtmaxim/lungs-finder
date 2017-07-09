@@ -51,5 +51,4 @@ if right_lung_hog_rectangle is not None:
 
 Requirements:
 - Python 3;
-- OpenCV3;
-- <a href="https://github.com/dicompyler/dicompyler-core" target="_blank">dicompyler-core</a> (Optionally, if you need dicom support).
+- OpenCV3.

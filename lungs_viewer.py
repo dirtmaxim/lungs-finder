@@ -129,7 +129,7 @@ def scan(argv):
                                 (245, 199, 75), 1)
 
             cv2.imshow("lungs-finder", color_image)
-            found_lungs = lf.get_lungs(scaled_image, 10)
+            found_lungs = lf.get_lungs(scaled_image)
 
             if found_lungs is not None:
                 cv2.imshow("Found lungs", found_lungs)

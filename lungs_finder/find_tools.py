@@ -1,4 +1,3 @@
-import numpy as np
 from . import haar_finder
 from . import hog_finder
 from . import lbp_finder
@@ -19,7 +18,7 @@ def find_max_rectangle(rectangles):
     return max_rectangle
 
 
-def get_lungs(image, padding):
+def get_lungs(image, padding=15):
     right_lung = hog_finder.find_right_lung_hog(image)
     left_lung = hog_finder.find_left_lung_hog(image)
 
@@ -46,11 +45,10 @@ def get_lungs(image, padding):
         spine = width / 5
         left_lung = int(x + width + spine), y, width, height
 
-    x_right, y_right, width_right, height_right = right_lung
+    x_right, y_right, _, height_right = right_lung
     x_left, y_left, width_left, height_left = left_lung
     x_right -= padding
     y_right -= padding
-    width_right += padding
     height_right += padding * 2
     y_left -= padding
     width_left += padding
@@ -68,32 +66,16 @@ def get_lungs(image, padding):
     if y_left < 0:
         y_left = 0
 
-    if width_right > image.shape[1]:
-        width_right = image.shape[1]
+    if y_right + height_right > image.shape[0]:
+        height_right = image.shape[0] - y_right
 
-    if height_right > image.shape[0]:
-        height_right = image.shape[0]
+    if x_left + width_left > image.shape[1]:
+        width_left = image.shape[1] - x_left
 
-    if width_left > image.shape[1]:
-        width_left = image.shape[1]
-
-    if height_left > image.shape[0]:
-        height_left = image.shape[0]
-
-    if x_right + width_right > x_left:
-        temp_width = width_right
-        width_right = x_left - x_right
-        temp_left = x_left
-        x_left = x_right + temp_width
-        width_left = width_left - temp_left + x_left
+    if y_left + height_left > image.shape[0]:
+        height_left = image.shape[0] - y_left
 
     top_y = min(y_right, y_left)
     bottom_y = max(y_right + height_right, y_left + height_left)
-    y_right = top_y
-    height_right = bottom_y - top_y
-    y_left = top_y
-    height_left = bottom_y - top_y
-    left_image = image[y_right:y_right + height_right, x_right:x_right + width_right]
-    right_image = image[y_left:y_left + height_left, x_left:x_left + width_left]
 
-    return np.hstack((left_image, right_image))
+    return image[top_y:bottom_y, x_right:x_left + width_left]

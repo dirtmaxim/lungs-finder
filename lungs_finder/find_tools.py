@@ -22,6 +22,14 @@ def get_lungs(image, padding=15):
     right_lung = hog_finder.find_right_lung_hog(image)
     left_lung = hog_finder.find_left_lung_hog(image)
 
+    if right_lung is not None and left_lung is not None:
+        x_right, y_right, width_right, height_right = right_lung
+        x_left, y_left, width_left, height_left = left_lung
+
+        if abs(x_right - x_left) < min(width_right, width_left):
+            right_lung = None
+            left_lung = None
+
     if right_lung is None:
         right_lung = haar_finder.find_right_lung_haar(image)
 

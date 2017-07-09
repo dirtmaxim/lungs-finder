@@ -28,7 +28,7 @@ image = cv2.imread("/your/image/cxr.png", 0)
 
 # Get both lungs image. It uses HOG as main method,
 # but if HOG found nothing it uses HAAR or LBP.
-found_lungs = lf.lf.get_lungs(image)
+found_lungs = lf.get_lungs(image)
 
 if found_lungs is not None:
     cv2.imshow("Found lungs", found_lungs)

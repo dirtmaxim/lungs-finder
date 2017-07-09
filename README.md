@@ -5,6 +5,12 @@
 ![](https://user-images.githubusercontent.com/11778655/27996147-765dfba8-64e4-11e7-81ca-9ea25b5d072d.png)
 
 ```
+Requirements:
+- Python 3;
+- OpenCV3.
+```
+
+```
 Installation:
 - git clone https://github.com/dirtmaxim/lungs-finder.git
 - cd lungs-finder
@@ -48,7 +54,3 @@ if right_lung_hog_rectangle is not None:
     cv2.imshow("Right lung", right_image)
     code = cv2.waitKey(0)
 ```
-
-Requirements:
-- Python 3;
-- OpenCV3.

@@ -12,12 +12,7 @@ Requirements:
 
 ```
 Installation:
-- git clone https://github.com/dirtmaxim/lungs-finder.git
-- cd lungs-finder
-- python setup.py install
-
-Or install directly using pip:
-- pip install git+https://github.com/dirtmaxim/lungs-finder.git
+- pip install lungs-finder
 ```
 
 ```
